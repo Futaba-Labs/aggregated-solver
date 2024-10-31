@@ -6,31 +6,39 @@ dotenv.config();
 const envSchema = z.object({
   // -- Private key
   PRIVATE_KEY: z.string(),
+  // -- Aggregator URL
+  AGGREGATOR_URL: z.string().url(),
   // -- HTTP RPC
-  HTTP_MAINNET_RPC_URL: z.string().url(),
-  HTTP_BASE_RPC_URL: z.string().url(),
-  HTTP_OPTIMISM_RPC_URL: z.string().url(),
-  HTTP_ARBITRUM_RPC_URL: z.string().url(),
-  HTTP_ZKSYNC_RPC_URL: z.string().url(),
-  HTTP_LINEA_RPC_URL: z.string().url(),
-  HTTP_BLAST_RPC_URL: z.string().url(),
-  HTTP_POLYGON_RPC_URL: z.string().url(),
-  HTTP_BSC_RPC_URL: z.string().url(),
+  RPC_PROVIDER_1: z.string().url(),
+  RPC_PROVIDER_10: z.string().url(),
+  RPC_PROVIDER_56: z.string().url(),
+  RPC_PROVIDER_137: z.string().url(),
+  RPC_PROVIDER_59144: z.string().url(),
+  RPC_PROVIDER_8453: z.string().url(),
+  RPC_PROVIDER_42161: z.string().url(),
+  RPC_PROVIDER_324: z.string().url(),
+  RPC_PROVIDER_81457: z.string().url(),
+  RPC_PROVIDER_534352: z.string().url(),
+  RPC_PROVIDER_480: z.string().url(),
 });
 
 const envResult = envSchema.safeParse({
   // -- Private key
   PRIVATE_KEY: process.env.PRIVATE_KEY,
+  // -- Aggregator URL
+  AGGREGATOR_URL: process.env.AGGREGATOR_URL,
   // -- HTTP RPC
-  HTTP_MAINNET_RPC_URL: process.env.HTTP_MAINNET_RPC_URL,
-  HTTP_BASE_RPC_URL: process.env.HTTP_BASE_RPC_URL,
-  HTTP_OPTIMISM_RPC_URL: process.env.HTTP_OPTIMISM_RPC_URL,
-  HTTP_ARBITRUM_RPC_URL: process.env.HTTP_ARBITRUM_RPC_URL,
-  HTTP_ZKSYNC_RPC_URL: process.env.HTTP_ZKSYNC_RPC_URL,
-  HTTP_LINEA_RPC_URL: process.env.HTTP_LINEA_RPC_URL,
-  HTTP_BLAST_RPC_URL: process.env.HTTP_BLAST_RPC_URL,
-  HTTP_POLYGON_RPC_URL: process.env.HTTP_POLYGON_RPC_URL,
-  HTTP_BSC_RPC_URL: process.env.HTTP_BSC_RPC_URL,
+  RPC_PROVIDER_1: process.env.RPC_PROVIDER_1,
+  RPC_PROVIDER_10: process.env.RPC_PROVIDER_10,
+  RPC_PROVIDER_56: process.env.RPC_PROVIDER_56,
+  RPC_PROVIDER_137: process.env.RPC_PROVIDER_137,
+  RPC_PROVIDER_59144: process.env.RPC_PROVIDER_59144,
+  RPC_PROVIDER_8453: process.env.RPC_PROVIDER_8453,
+  RPC_PROVIDER_42161: process.env.RPC_PROVIDER_42161,
+  RPC_PROVIDER_324: process.env.RPC_PROVIDER_324,
+  RPC_PROVIDER_81457: process.env.RPC_PROVIDER_81457,
+  RPC_PROVIDER_534352: process.env.RPC_PROVIDER_534352,
+  RPC_PROVIDER_480: process.env.RPC_PROVIDER_480,
 });
 
 if (!envResult.success) {
@@ -43,3 +51,17 @@ if (!envResult.success) {
 const env = envResult.data;
 
 export default env;
+
+export interface RPC_PROVIDER {
+  RPC_PROVIDER_1: string;
+  RPC_PROVIDER_10: string;
+  RPC_PROVIDER_56: string;
+  RPC_PROVIDER_137: string;
+  RPC_PROVIDER_59144: string;
+  RPC_PROVIDER_8453: string;
+  RPC_PROVIDER_42161: string;
+  RPC_PROVIDER_324: string;
+  RPC_PROVIDER_81457: string;
+  RPC_PROVIDER_534352: string;
+  RPC_PROVIDER_480: string;
+}

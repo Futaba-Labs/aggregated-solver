@@ -1,5 +1,7 @@
+import { loadConfig } from "./config/config";
+
 const main = () => {
-  console.log("Hello World");
+  const config = loadConfig();
 };
 
 main();

@@ -1,0 +1,132 @@
+[
+  {
+    "name": "across",
+    "simulate": true,
+    "srcChains": [
+      {
+        "chainId": 1,
+        "confirmation": {
+          "0.001": 1,
+          "2": 2
+        }
+      },
+      {
+        "chainId": 10,
+        "confirmation": {
+          "0.001": 0,
+          "0.1": 0,
+          "1": 0
+        }
+      },
+      {
+        "chainId": 42161,
+        "confirmation": {
+          "0.001": 0,
+          "0.1": 0,
+          "1": 0
+        }
+      },
+      {
+        "chainId": 324,
+        "confirmation": {
+          "0.001": 0,
+          "0.1": 0,
+          "1": 0
+        }
+      },
+      {
+        "chainId": 534352,
+        "confirmation": {
+          "0.001": 0,
+          "0.1": 0,
+          "1": 0
+        }
+      },
+      {
+        "chainId": 59144,
+        "confirmation": {
+          "0.001": 0,
+          "0.1": 0,
+          "1": 0
+        }
+      },
+      {
+        "chainId": 81457,
+        "confirmation": {
+          "0.001": 0,
+          "0.1": 0,
+          "1": 0
+        }
+      },
+      {
+        "chainId": 480,
+        "confirmation": {
+          "0.001": 0,
+          "0.1": 0,
+          "1": 0
+        }
+      },
+      {
+        "chainId": 8453,
+        "confirmation": {
+          "0.001": 0,
+          "0.1": 0,
+          "1": 0
+        }
+      }
+    ],
+    "dstChains": [
+      {
+        "chainId": 10,
+        "fullContract": "0x6f26Bf09B1C792e3228e5467807a900A503c0281",
+        "supportTokens": [
+          {
+            "address": "0x4200000000000000000000000000000000000006",
+            "symbol": "WETH",
+            "decimals": 18,
+            "minAmount": 0.03,
+            "maxAmount": 5,
+            "relayerFeePct": {
+              "0.001": 0.5,
+              "0.1": 0.5,
+              "1": 0.5
+            }
+          }
+        ]
+      },
+      {
+        "chainId": 1,
+        "fullContract": "0x5c7BCd6E7De5423a257D81B442095A1a6ced35C5",
+        "supportTokens": [
+          {
+            "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+            "symbol": "WETH",
+            "decimals": 18,
+            "minAmount": 0.03,
+            "maxAmount": 5,
+            "relayerFeePct": {
+              "0.001": 0.9,
+              "0.1": 0.9,
+              "1": 0.9
+            }
+          }
+        ]
+      }
+    ],
+    "rebalance": {
+      "wrap": [
+        {
+          "chainId": 1,
+          "wethPct": 0.7,
+          "allowancePct": 0.1,
+          "interval": 60000
+        }
+      ],
+      "singleChain": [],
+      "crossChain": []
+    },
+    "settlement": {
+      "interval": 600000
+    }
+  }
+]
