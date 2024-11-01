@@ -8,6 +8,7 @@ const envSchema = z.object({
   PRIVATE_KEY: z.string(),
   // -- Aggregator URL
   AGGREGATOR_URL: z.string().url(),
+  AGGREGATOR_WS_URL: z.string().url(),
   // -- HTTP RPC
   RPC_PROVIDER_1: z.string().url(),
   RPC_PROVIDER_10: z.string().url(),
@@ -27,6 +28,7 @@ const envResult = envSchema.safeParse({
   PRIVATE_KEY: process.env.PRIVATE_KEY,
   // -- Aggregator URL
   AGGREGATOR_URL: process.env.AGGREGATOR_URL,
+  AGGREGATOR_WS_URL: process.env.AGGREGATOR_WS_URL,
   // -- HTTP RPC
   RPC_PROVIDER_1: process.env.RPC_PROVIDER_1,
   RPC_PROVIDER_10: process.env.RPC_PROVIDER_10,

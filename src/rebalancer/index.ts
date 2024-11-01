@@ -1,5 +1,5 @@
 const runRebalancer = () => {
-  console.log("Running rebalancer");
+  console.log('Running rebalancer');
 };
 
 export default runRebalancer;

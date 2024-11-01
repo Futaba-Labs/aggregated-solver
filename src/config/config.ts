@@ -1,18 +1,18 @@
 import {
   Address,
+  PublicClient,
+  WalletClient,
   createPublicClient,
   createWalletClient,
   http,
-  PublicClient,
-  WalletClient,
   webSocket,
 } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
+
 import CONFIG from '../../config.json';
 import { logWithLabel } from '../utils/logger';
 import { CHAIN_IDs } from './constants';
 import env, { RPC_PROVIDER } from './env';
-
 
 export interface Config {
   common: CommonConfig;
@@ -28,7 +28,7 @@ export interface ChainConfig {
   chainId: CHAIN_IDs;
   publicClient: PublicClient;
   walletClient: WalletClient;
-};
+}
 
 export interface ProtocolConfig {
   simulate: boolean;
@@ -84,13 +84,11 @@ export interface SettlementConfig {
   interval: number;
 }
 
-export const account = privateKeyToAccount(
-  env.PRIVATE_KEY as `0x${string}`
-);
+export const account = privateKeyToAccount(env.PRIVATE_KEY as `0x${string}`);
 
 export function loadConfig(): Config {
   // fetch chains from config
-  const chains: ChainConfig[] = []
+  const chains: ChainConfig[] = [];
   CONFIG.forEach((config) => {
     config.srcChains.map((chain) => {
       const rpcUrl = env[`RPC_PROVIDER_${chain.chainId}` as keyof RPC_PROVIDER];
@@ -179,13 +177,12 @@ export function loadConfig(): Config {
     });
   });
 
-  const config =
-  {
+  const config = {
     common: {
       relayerAddress: account.address,
       chains,
     },
-    protocols
+    protocols,
   };
 
   logWithLabel({

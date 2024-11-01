@@ -84,7 +84,7 @@
             "address": "0x4200000000000000000000000000000000000006",
             "symbol": "WETH",
             "decimals": 18,
-            "minAmount": 0.03,
+            "minAmount": 0.001,
             "maxAmount": 5,
             "relayerFeePct": {
               "0.001": 0.5,
@@ -102,7 +102,7 @@
             "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
             "symbol": "WETH",
             "decimals": 18,
-            "minAmount": 0.03,
+            "minAmount": 0.001,
             "maxAmount": 5,
             "relayerFeePct": {
               "0.001": 0.9,
