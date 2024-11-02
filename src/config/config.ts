@@ -10,9 +10,9 @@ import {
 import { privateKeyToAccount } from 'viem/accounts';
 
 import CONFIG from '../../config.json';
-import { logWithLabel } from '../utils/logger';
 import { CHAIN_IDs } from './constants';
 import env, { RPC_PROVIDER } from './env';
+import { logWithLabel } from '../utils';
 
 export interface Config {
   common: CommonConfig;
@@ -53,7 +53,7 @@ export interface SrcChainFilter {
 export interface DstChainFilter {
   chainId: CHAIN_IDs;
   supportTokens: Token[];
-  fullContract: Address;
+  fillContract: Address;
 }
 
 export type Token = {
@@ -144,7 +144,7 @@ export function loadConfig(): Config {
     config.dstChains.map((chain) => {
       dstChainFilter.push({
         chainId: chain.chainId,
-        fullContract: chain.fullContract as Address,
+        fillContract: chain.fillContract as Address,
         supportTokens: chain.supportTokens.map((token) => ({
           address: token.address as Address,
           symbol: token.symbol,

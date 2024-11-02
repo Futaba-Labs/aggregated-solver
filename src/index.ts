@@ -1,6 +1,6 @@
 import { loadConfig } from './config/config';
 import runRelayer from './relayer';
-import { logWithLabel } from './utils/logger';
+import { logWithLabel } from './utils';
 
 const main = async () => {
   const config = loadConfig();

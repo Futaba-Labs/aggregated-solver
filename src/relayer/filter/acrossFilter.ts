@@ -2,8 +2,8 @@ import { zeroAddress } from 'viem';
 
 import { Config } from '../../config/config';
 import { Intent } from '../../types';
-import { logWithLabel } from '../../utils/logger';
 import { BaseFilter } from './baseFilter';
+import { logWithLabel } from '../../utils';
 
 export interface AcrossMetadata {
   destinationChainId: bigint;

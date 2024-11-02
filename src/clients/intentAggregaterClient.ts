@@ -6,7 +6,7 @@ import { WebSocket } from 'ws';
 import { Config, IntentFilter } from '../config/config';
 import env from '../config/env';
 import { CustomFilter, Intent, IntentExecution } from '../types';
-import { logWithLabel } from '../utils/logger';
+import { logWithLabel } from '../utils';
 
 type IntentAggregatorFilter = {
   src: string[];
