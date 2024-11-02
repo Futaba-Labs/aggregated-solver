@@ -30,7 +30,7 @@ export class IntentAggregaterClient {
     const dstFilter = [];
     for (const chain of intentFilter.dstChains) {
       for (const token of chain.supportTokens) {
-        dstFilter.push(`${chain.chainId}:${token.address}`);
+        dstFilter.push(`${chain.chainId}`);
         // dstFilter.push(`${chain.chainId}:${token.address}:${parseUnits(token.minAmount.toString(), token.decimals)}:${parseUnits(token.maxAmount.toString(), token.decimals)}`);
       }
     }
@@ -116,46 +116,42 @@ export class IntentAggregaterClient {
     const qs = querystring.stringify(query);
 
     const response = await axios.get(`${this.apiUrl}/api/intents?${qs}`);
-    return JSON.parse(response.data.toString());
+    return response.data;
   }
 
   async fetchFillData(
     intent: Intent,
     repaymentChain: 'source' | 'destination'
   ) {
-    const requestFillBody = {
-      signer: this.config.common.relayerAddress,
-      repaymentChain,
-    };
-
     const response = await axios.post(
       `${this.apiUrl}/api/intents/${intent.id}/request`,
       {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestFillBody),
-      }
-    );
-    return JSON.parse(response.data.toString()) as FillRequest;
-  }
-
-  async sendIntent(intent: Intent, signedTx: string) {
-    const fillIntentBody = {
-      signedTransaction: signedTx,
-    };
-
-    const response = await axios.post(
-      `${this.apiUrl}/api/intents/${intent.id}/fill`,
+        signer: this.config.common.relayerAddress,
+        repaymentChain,
+      },
       {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(fillIntentBody),
+      }
+    );
+    return response.data as FillRequest;
+  }
+
+  async sendIntent(intent: Intent, signedTx: string) {
+    const response = await axios.post(
+      `${this.apiUrl}/api/intents/${intent.id}/fill`,
+      {
+        signedTransaction: signedTx,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }
     );
 
-    return JSON.parse(response.data.toString());
+    return response.data;
   }
 
   private websocketReconnect(onEvent: IntentExecution, filter: CustomFilter) {

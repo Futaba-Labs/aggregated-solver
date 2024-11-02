@@ -160,7 +160,7 @@ export class BaseFiller {
   private async fetchFillData() {
     return await this.intentAggregaterClient.fetchFillData(
       this.intent,
-      'destination'
+      'source'
     );
   }
 

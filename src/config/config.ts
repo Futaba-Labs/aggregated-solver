@@ -173,7 +173,7 @@ export function loadConfig(): Config {
     };
 
     protocols.push({
-      name: config.name,
+      name: config.name.toLowerCase(),
       simulate: config.simulate,
       intentFilter: { srcChains: srcChainFilter, dstChains: dstChainFilter },
       rebalance,
@@ -207,7 +207,7 @@ export const getChainConfig = (config: Config, chainId: CHAIN_IDs) => {
 };
 
 export const fetchProtocolConfig = (protocol: string) => {
-  const protocolConfig = CONFIG.find((p) => p.name === protocol);
+  const protocolConfig = CONFIG.find((p) => p.name === protocol.toLowerCase());
   if (!protocolConfig) {
     throw new Error(`Protocol not found: ${protocol}`);
   }

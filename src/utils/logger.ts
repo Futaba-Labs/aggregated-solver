@@ -27,10 +27,10 @@ const logger = createLogger({
 });
 
 export const logWithLabel = (params: LogParams) => {
-  logger.add(
-    new transports.Console({
-      format: combine(...baseFormats, dynamicLabelFormat(params.labelText)),
-    })
-  );
+  const console = new transports.Console({
+    format: combine(...baseFormats, dynamicLabelFormat(params.labelText)),
+  });
+  logger.add(console);
   logger.log({ level: params.level, message: params.message });
+  logger.remove(console);
 };

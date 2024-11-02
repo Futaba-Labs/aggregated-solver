@@ -2,7 +2,7 @@ import { loadConfig } from './config/config';
 import runRelayer from './relayer';
 import { logWithLabel } from './utils';
 
-const main = async () => {
+const main = () => {
   const config = loadConfig();
 
   logWithLabel({
@@ -10,7 +10,7 @@ const main = async () => {
     level: 'info',
     message: 'Starting relayer...',
   });
-  await runRelayer(config);
+  runRelayer(config);
 };
 
 main();
