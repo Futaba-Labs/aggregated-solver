@@ -5,7 +5,7 @@ import { WebSocket } from 'ws';
 
 import { Config, IntentFilter } from '../config/config';
 import env from '../config/env';
-import { CustomFilter, Intent, IntentExecution } from '../types';
+import { CustomFilter, FillRequest, Intent, IntentExecution } from '../types';
 import { logWithLabel } from '../utils';
 
 type IntentAggregatorFilter = {
@@ -116,6 +116,39 @@ export class IntentAggregaterClient {
     const qs = querystring.stringify(query);
 
     const response = await axios.get(`${this.apiUrl}/api/intents?${qs}`);
+    return JSON.parse(response.data.toString());
+  }
+
+  async fetchFillData(intent: Intent, repaymentChain: 'source' | 'destination') {
+    const requestFillBody = {
+      signer: this.config.common.relayerAddress,
+      repaymentChain,
+    };
+
+    const response = await axios.post(
+      `${this.apiUrl}/api/intents/${intent.id}/request`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestFillBody),
+      }
+    );
+    return JSON.parse(response.data.toString()) as FillRequest;
+  }
+
+  async sendIntent(intent: Intent, signedTx: string) {
+    const fillIntentBody = {
+      signedTransaction: signedTx,
+    };
+
+    const response = await axios.post(`${this.apiUrl}/api/intents/${intent.id}/fill`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(fillIntentBody),
+    });
+
     return JSON.parse(response.data.toString());
   }
 

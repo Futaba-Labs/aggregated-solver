@@ -1,9 +1,9 @@
 import { Config } from '../../config/config';
-import { CustomFilter, Intent } from '../../types';
-import { AcrossFilter, AcrossMetadata } from './acrossFilter';
+import { AcrossMetadata, Intent } from '../../types';
+import { AcrossFilter } from './acrossFilter';
 import { BaseFilter } from './baseFilter';
 
-export const customFilter = async (
+export const intentFilter = async (
   intent: Intent,
   config: Config
 ): Promise<boolean> => {

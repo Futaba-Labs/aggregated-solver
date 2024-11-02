@@ -137,10 +137,4 @@ export interface Intent<Source extends string = string, Metadata = unknown> {
   metadata: Metadata;
 }
 
-export type IntentExecution = (
-  intent: Intent,
-  config: Config,
-  client: IntentAggregaterClient
-) => Promise<void>;
-
 export type CustomFilter = (intent: Intent, config: Config) => Promise<boolean>;

@@ -1,25 +1,9 @@
 import { zeroAddress } from 'viem';
 
 import { Config } from '../../config/config';
-import { Intent } from '../../types';
+import { AcrossMetadata, Intent } from '../../types';
 import { BaseFilter } from './baseFilter';
 import { logWithLabel } from '../../utils';
-
-export interface AcrossMetadata {
-  destinationChainId: bigint;
-  depositId: number;
-  depositor: string;
-  inputToken: string;
-  outputToken: string;
-  inputAmount: bigint;
-  outputAmount: bigint;
-  quoteTimestamp: number;
-  fillDeadline: number;
-  exclusivityDeadline: number;
-  recipient: string;
-  exclusiveRelayer: string;
-  message: string;
-}
 
 export class AcrossFilter extends BaseFilter {
   constructor(intent: Intent<'across', AcrossMetadata>, config: Config) {

@@ -7,6 +7,7 @@ import {
   http,
   webSocket,
 } from 'viem';
+import { arbitrum } from 'viem/chains';
 import { privateKeyToAccount } from 'viem/accounts';
 
 import CONFIG from '../../config.json';
@@ -54,6 +55,7 @@ export interface DstChainFilter {
   chainId: CHAIN_IDs;
   supportTokens: Token[];
   fillContract: Address;
+  useIntentAggregater: boolean;
 }
 
 export type Token = {
@@ -97,6 +99,7 @@ export function loadConfig(): Config {
       });
       const walletClient = createWalletClient({
         account,
+        chain: arbitrum,
         transport: http(rpcUrl),
       });
       if (!chains.find((c) => c.chainId === chain.chainId)) {
@@ -145,6 +148,7 @@ export function loadConfig(): Config {
       dstChainFilter.push({
         chainId: chain.chainId,
         fillContract: chain.fillContract as Address,
+        useIntentAggregater: chain.useIntentAggregater,
         supportTokens: chain.supportTokens.map((token) => ({
           address: token.address as Address,
           symbol: token.symbol,
@@ -193,3 +197,28 @@ export function loadConfig(): Config {
 
   return config;
 }
+
+export const getChainConfig = (config: Config, chainId: CHAIN_IDs) => {
+  const chainConfig = config.common.chains.find((c) => c.chainId === chainId);
+  if (!chainConfig) {
+    throw new Error(`Chain config not found for chainId: ${chainId}`);
+  }
+  return chainConfig;
+};
+
+export const fetchProtocolConfig = (protocol: string) => {
+  const protocolConfig = CONFIG.find((p) => p.name === protocol);
+  if (!protocolConfig) {
+    throw new Error(`Protocol not found: ${protocol}`);
+  }
+  return protocolConfig;
+};
+
+export const fetchDstChainFilter = (protocol: string, chainId: CHAIN_IDs) => {
+  const protocolConfig = fetchProtocolConfig(protocol);
+  const dstChainFilter = protocolConfig.dstChains.find((c) => c.chainId === chainId);
+  if (!dstChainFilter) {
+    throw new Error(`Dst chain filter not found for chainId: ${chainId}`);
+  }
+  return dstChainFilter;
+};
