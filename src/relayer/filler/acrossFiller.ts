@@ -1,7 +1,7 @@
-import { Config } from "../../config/config";
-import { AcrossMetadata, Intent } from "../../types";
-import { BaseFiller } from "./baseFiller";
-import { IntentAggregaterClient } from "../../clients";
+import { IntentAggregaterClient } from '../../clients';
+import { Config } from '../../config/config';
+import { AcrossMetadata, Intent } from '../../types';
+import { BaseFiller } from './baseFiller';
 
 export class AcrossFiller extends BaseFiller {
   constructor(

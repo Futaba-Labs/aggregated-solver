@@ -7,13 +7,13 @@ import {
   http,
   webSocket,
 } from 'viem';
-import { arbitrum } from 'viem/chains';
 import { privateKeyToAccount } from 'viem/accounts';
+import { arbitrum } from 'viem/chains';
 
 import CONFIG from '../../config.json';
+import { logWithLabel } from '../utils';
 import { CHAIN_IDs } from './constants';
 import env, { RPC_PROVIDER } from './env';
-import { logWithLabel } from '../utils';
 
 export interface Config {
   common: CommonConfig;
@@ -216,7 +216,9 @@ export const fetchProtocolConfig = (protocol: string) => {
 
 export const fetchDstChainFilter = (protocol: string, chainId: CHAIN_IDs) => {
   const protocolConfig = fetchProtocolConfig(protocol);
-  const dstChainFilter = protocolConfig.dstChains.find((c) => c.chainId === chainId);
+  const dstChainFilter = protocolConfig.dstChains.find(
+    (c) => c.chainId === chainId
+  );
   if (!dstChainFilter) {
     throw new Error(`Dst chain filter not found for chainId: ${chainId}`);
   }

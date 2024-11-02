@@ -2,8 +2,8 @@ import { zeroAddress } from 'viem';
 
 import { Config } from '../../config/config';
 import { AcrossMetadata, Intent } from '../../types';
-import { BaseFilter } from './baseFilter';
 import { logWithLabel } from '../../utils';
+import { BaseFilter } from './baseFilter';
 
 export class AcrossFilter extends BaseFilter {
   constructor(intent: Intent<'across', AcrossMetadata>, config: Config) {

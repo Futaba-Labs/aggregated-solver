@@ -1,17 +1,23 @@
 import { Hex } from 'viem';
 import { Address } from 'viem';
+
 import { IntentAggregaterClient } from '../../clients';
-import { Config, fetchDstChainFilter, fetchProtocolConfig, getChainConfig } from '../../config/config';
+import { CHAIN_IDs } from '../../config';
+import {
+  Config,
+  fetchDstChainFilter,
+  fetchProtocolConfig,
+  getChainConfig,
+} from '../../config/config';
 import { Intent } from '../../types';
 import { logWithLabel } from '../../utils';
-import { CHAIN_IDs } from '../../config';
 
 export class BaseFiller {
   constructor(
     private readonly intent: Intent,
     private readonly config: Config,
     private readonly intentAggregaterClient: IntentAggregaterClient
-  ) { }
+  ) {}
 
   async fillIntent() {
     if (await this.useSimulation()) {
@@ -28,7 +34,11 @@ export class BaseFiller {
   private async fillIntentWithWalletClient() {
     const { txParams, chainConfig } = await this.signTransaction();
 
-    logWithLabel({ labelText: 'BaseFiller:fillIntent', level: 'info', message: `Sending transaction to wallet client...` });
+    logWithLabel({
+      labelText: 'BaseFiller:fillIntent',
+      level: 'info',
+      message: `Sending transaction to wallet client...`,
+    });
 
     const hash = await chainConfig.walletClient.sendTransaction(txParams);
 
@@ -36,9 +46,17 @@ export class BaseFiller {
       await chainConfig.publicClient.waitForTransactionReceipt({ hash });
 
     if (transaction.status === 'success') {
-      logWithLabel({ labelText: 'BaseFiller:fillIntent', level: 'info', message: `Transaction successful: ${hash}` });
+      logWithLabel({
+        labelText: 'BaseFiller:fillIntent',
+        level: 'info',
+        message: `Transaction successful: ${hash}`,
+      });
     } else {
-      logWithLabel({ labelText: 'BaseFiller:fillIntent', level: 'warn', message: `Transaction failed: ${hash}` });
+      logWithLabel({
+        labelText: 'BaseFiller:fillIntent',
+        level: 'warn',
+        message: `Transaction failed: ${hash}`,
+      });
     }
   }
 
@@ -47,14 +65,29 @@ export class BaseFiller {
 
     const signedTx = await chainConfig.walletClient.signTransaction(txParams);
 
-    logWithLabel({ labelText: 'BaseFiller:fillIntentWithIntentAggregater', level: 'info', message: `Sending signed transaction to intent aggregater...` });
+    logWithLabel({
+      labelText: 'BaseFiller:fillIntentWithIntentAggregater',
+      level: 'info',
+      message: `Sending signed transaction to intent aggregater...`,
+    });
 
-    const response = await this.intentAggregaterClient.sendIntent(this.intent, signedTx);
+    const response = await this.intentAggregaterClient.sendIntent(
+      this.intent,
+      signedTx
+    );
 
     if (response.status === 'success') {
-      logWithLabel({ labelText: 'BaseFiller:fillIntentWithIntentAggregater', level: 'info', message: `Transaction successful` });
+      logWithLabel({
+        labelText: 'BaseFiller:fillIntentWithIntentAggregater',
+        level: 'info',
+        message: `Transaction successful`,
+      });
     } else {
-      logWithLabel({ labelText: 'BaseFiller:fillIntentWithIntentAggregater', level: 'warn', message: `Transaction failed` });
+      logWithLabel({
+        labelText: 'BaseFiller:fillIntentWithIntentAggregater',
+        level: 'warn',
+        message: `Transaction failed`,
+      });
     }
   }
 
@@ -62,13 +95,25 @@ export class BaseFiller {
     const { txParams, chainConfig } = await this.signTransaction();
 
     try {
-      logWithLabel({ labelText: 'BaseFiller:simulateTransaction', level: 'info', message: `Simulating transaction...` });
+      logWithLabel({
+        labelText: 'BaseFiller:simulateTransaction',
+        level: 'info',
+        message: `Simulating transaction...`,
+      });
 
       await chainConfig.publicClient.estimateGas(txParams);
 
-      logWithLabel({ labelText: 'BaseFiller:simulateTransaction', level: 'info', message: `Simulation successful` });
+      logWithLabel({
+        labelText: 'BaseFiller:simulateTransaction',
+        level: 'info',
+        message: `Simulation successful`,
+      });
     } catch (error) {
-      logWithLabel({ labelText: 'BaseFiller:simulateTransaction', level: 'warn', message: `Simulation failed: ${error}` });
+      logWithLabel({
+        labelText: 'BaseFiller:simulateTransaction',
+        level: 'warn',
+        message: `Simulation failed: ${error}`,
+      });
     }
   }
 
@@ -83,34 +128,40 @@ export class BaseFiller {
       chain: chainConfig.walletClient.chain,
       to: fillData.contractAddress as Address,
       value: BigInt(fillData.value),
-      data: fillData.data as Hex
-    }
+      data: fillData.data as Hex,
+    };
 
     if (gasInfo.gasPrice !== BigInt(0)) {
       txParams = {
         ...txParams,
         gasPrice: gasInfo.gasPrice,
-      }
-    } else if (gasInfo.maxFeePerGas !== BigInt(0) && gasInfo.maxPriorityFeePerGas !== BigInt(0)) {
+      };
+    } else if (
+      gasInfo.maxFeePerGas !== BigInt(0) &&
+      gasInfo.maxPriorityFeePerGas !== BigInt(0)
+    ) {
       txParams = {
         ...txParams,
         maxFeePerGas: gasInfo.maxFeePerGas,
         maxPriorityFeePerGas: gasInfo.maxPriorityFeePerGas,
-      }
+      };
     }
 
     if (gasInfo.gasLimit !== BigInt(0)) {
       txParams = {
         ...txParams,
         gas: gasInfo.gasLimit,
-      }
+      };
     }
 
     return { txParams, chainConfig };
   }
 
   private async fetchFillData() {
-    return await this.intentAggregaterClient.fetchFillData(this.intent, 'destination');
+    return await this.intentAggregaterClient.fetchFillData(
+      this.intent,
+      'destination'
+    );
   }
 
   private async useIntentAggregater(chainId: CHAIN_IDs) {

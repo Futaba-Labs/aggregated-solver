@@ -1,4 +1,4 @@
-import { Config, getChainConfig, ProtocolConfig } from '../config/config';
+import { Config, ProtocolConfig, getChainConfig } from '../config/config';
 import { checkEnoughAllowance, logWithLabel } from '../utils';
 import { intentFiller } from './filler';
 import { intentFilter } from './filter';

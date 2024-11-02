@@ -7,7 +7,7 @@ export class IntentFiller {
     private readonly intent: Intent,
     private readonly config: Config,
     private readonly intentAggregaterClient: IntentAggregaterClient
-  ) { }
+  ) {}
 
-  async fillIntent() { }
+  async fillIntent() {}
 }

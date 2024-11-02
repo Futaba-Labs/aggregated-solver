@@ -119,7 +119,10 @@ export class IntentAggregaterClient {
     return JSON.parse(response.data.toString());
   }
 
-  async fetchFillData(intent: Intent, repaymentChain: 'source' | 'destination') {
+  async fetchFillData(
+    intent: Intent,
+    repaymentChain: 'source' | 'destination'
+  ) {
     const requestFillBody = {
       signer: this.config.common.relayerAddress,
       repaymentChain,
@@ -142,12 +145,15 @@ export class IntentAggregaterClient {
       signedTransaction: signedTx,
     };
 
-    const response = await axios.post(`${this.apiUrl}/api/intents/${intent.id}/fill`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(fillIntentBody),
-    });
+    const response = await axios.post(
+      `${this.apiUrl}/api/intents/${intent.id}/fill`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(fillIntentBody),
+      }
+    );
 
     return JSON.parse(response.data.toString());
   }

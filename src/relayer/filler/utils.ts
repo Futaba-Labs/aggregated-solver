@@ -1,8 +1,8 @@
-import { AcrossFiller } from ".";
-import { IntentAggregaterClient } from "../../clients";
-import { Config } from "../../config";
-import { Intent, AcrossMetadata } from "../../types";
-import { BaseFiller } from "./baseFiller";
+import { AcrossFiller } from '.';
+import { IntentAggregaterClient } from '../../clients';
+import { Config } from '../../config';
+import { AcrossMetadata, Intent } from '../../types';
+import { BaseFiller } from './baseFiller';
 
 export const intentFiller = async (
   intent: Intent,
