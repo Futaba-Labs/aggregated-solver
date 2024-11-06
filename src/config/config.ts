@@ -18,6 +18,8 @@ import env, { RPC_PROVIDER } from './env';
 export interface Config {
   common: CommonConfig;
   protocols: ProtocolConfig[];
+  rebalance: RebalanceConfig;
+  settlement: SettlementConfig;
 }
 
 export interface CommonConfig {
@@ -35,8 +37,6 @@ export interface ProtocolConfig {
   simulate: boolean;
   name: string;
   intentFilter: IntentFilter;
-  rebalance: RebalanceConfig;
-  settlement: SettlementConfig;
 }
 
 export interface IntentFilter {
@@ -78,6 +78,7 @@ export interface RebalanceConfig {
 
 export interface WrapConfig {
   chainId: CHAIN_IDs;
+  address: Address;
   wethPct: number;
   allowancePct: number;
   interval: number;
@@ -92,7 +93,7 @@ export const account = privateKeyToAccount(env.PRIVATE_KEY as `0x${string}`);
 export function loadConfig(): Config {
   // fetch chains from config
   const chains: ChainConfig[] = [];
-  CONFIG.forEach((config) => {
+  CONFIG.protocols.forEach((config) => {
     config.srcChains.map((chain) => {
       const rpcUrl = env[`RPC_PROVIDER_${chain.chainId}` as keyof RPC_PROVIDER];
       const publicClient = createPublicClient({
@@ -134,7 +135,7 @@ export function loadConfig(): Config {
   // fetch protocols from config
   const protocols: ProtocolConfig[] = [];
 
-  CONFIG.forEach((config) => {
+  CONFIG.protocols.forEach((config) => {
     // set intent filter
     const srcChainFilter: SrcChainFilter[] = [];
     config.srcChains.map((chain) => {
@@ -162,26 +163,27 @@ export function loadConfig(): Config {
       });
     });
 
-    // set rebalance
-    const rebalance: RebalanceConfig = {
-      wrap: config.rebalance.wrap,
-      singleChain: [],
-      crossChain: [],
-    };
-
-    // set settlement
-    const settlement: SettlementConfig = {
-      interval: config.settlement.interval,
-    };
-
     protocols.push({
       name: config.name.toLowerCase(),
       simulate: config.simulate,
       intentFilter: { srcChains: srcChainFilter, dstChains: dstChainFilter },
-      rebalance,
-      settlement,
     });
   });
+
+  // set rebalance
+  const rebalance: RebalanceConfig = {
+    wrap: CONFIG.rebalance.wrap.map((wrap) => ({
+      ...wrap,
+      address: wrap.address as Address,
+    })),
+    singleChain: [],
+    crossChain: [],
+  };
+
+  // set settlement
+  const settlement: SettlementConfig = {
+    interval: CONFIG.settlement.interval,
+  };
 
   const config = {
     common: {
@@ -189,6 +191,8 @@ export function loadConfig(): Config {
       chains,
     },
     protocols,
+    rebalance,
+    settlement,
   };
 
   logWithLabel({
@@ -209,7 +213,9 @@ export const getChainConfig = (config: Config, chainId: CHAIN_IDs) => {
 };
 
 export const fetchProtocolConfig = (protocol: string) => {
-  const protocolConfig = CONFIG.find((p) => p.name === protocol.toLowerCase());
+  const protocolConfig = CONFIG.protocols.find(
+    (p) => p.name === protocol.toLowerCase()
+  );
   if (!protocolConfig) {
     throw new Error(`Protocol not found: ${protocol}`);
   }
