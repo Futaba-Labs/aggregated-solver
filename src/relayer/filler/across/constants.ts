@@ -10,3 +10,8 @@ export const SPOKE_POOL_ABI = spokePoolAbi;
 export const HUB_POOL_ABI = hubPoolAbi;
 export const ACROSS_CONFIG_STORE_ABI = acrossConfigStoreAbi;
 export const DEFAULT_GAS_USED = BigInt(110000);
+
+export const L1_TOKEN_ADDRESS = {
+  WETH: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+  USDC: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+};

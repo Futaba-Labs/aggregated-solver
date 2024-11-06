@@ -20,6 +20,7 @@ import {
   DEFAULT_GAS_USED,
   HUB_POOL_ABI,
   HUB_POOL_ADDRESS,
+  L1_TOKEN_ADDRESS,
 } from './constants';
 
 export class AcrossFiller extends BaseFiller<AcrossMetadata> {
@@ -143,11 +144,20 @@ export class AcrossFiller extends BaseFiller<AcrossMetadata> {
       this.intent.metadata.quoteTimestamp
     );
 
+    const tokenConfig = fetchTokenConfig(
+      this.intent.source.toLowerCase(),
+      this.intent.output.chainId,
+      this.intent.output.tokenAddress as `0x${string}`
+    );
+
+    const l1TokenAddress =
+      L1_TOKEN_ADDRESS[tokenConfig.symbol as keyof typeof L1_TOKEN_ADDRESS];
+
     // 2. multi call to get the current and next liquidity utilization and the L1 token config
     const [currentUt, nextUt, rawL1TokenConfig] = await this.multiCall(
       this.intent.input.amount,
       closestBlock,
-      this.intent.output.tokenAddress as `0x${string}`
+      l1TokenAddress
     );
 
     const parsedL1TokenConfig =
