@@ -4,36 +4,62 @@ import { Address } from 'viem';
 import { IntentAggregaterClient } from '../../clients';
 import { CHAIN_IDs } from '../../config';
 import {
+  ChainConfig,
   Config,
   fetchDstChainFilter,
   fetchProtocolConfig,
   getChainConfig,
 } from '../../config/config';
-import { Intent } from '../../types';
+import { FillRequest, Intent } from '../../types';
 import { logWithLabel } from '../../utils';
 
-export class BaseFiller {
+export interface GasInfo {
+  gasLimit: bigint;
+  gasPrice: bigint;
+  maxFeePerGas: bigint;
+  maxPriorityFeePerGas: bigint;
+}
+
+export class BaseFiller<T> {
   constructor(
-    private readonly intent: Intent,
-    private readonly config: Config,
+    protected readonly intent: Intent<string, T>,
+    protected readonly config: Config,
     private readonly intentAggregaterClient: IntentAggregaterClient
   ) {}
 
   async fillIntent() {
+    const fillData = await this.fetchFillData();
+
+    const chainConfig = getChainConfig(this.config, fillData.chainId);
+
+    const gasInfo = await this.calculateGasFee(fillData, chainConfig);
+
+    if (!gasInfo) {
+      logWithLabel({
+        labelText: 'BaseFiller:initialize',
+        level: 'warn',
+        message: `Gas info is null`,
+      });
+      return;
+    }
+
+    const txParams = this.createTransaction(fillData, gasInfo, chainConfig);
+
     if (await this.useSimulation()) {
-      await this.simulateTransaction();
+      await this.simulateTransaction(txParams, chainConfig);
     } else {
       if (await this.useIntentAggregater(this.intent.output.chainId)) {
-        await this.fillIntentWithIntentAggregater();
+        await this.fillIntentWithIntentAggregater(txParams, chainConfig);
       } else {
-        await this.fillIntentWithWalletClient();
+        await this.fillIntentWithWalletClient(txParams, chainConfig);
       }
     }
   }
 
-  private async fillIntentWithWalletClient() {
-    const { txParams, chainConfig } = await this.signTransaction();
-
+  private async fillIntentWithWalletClient(
+    txParams: any,
+    chainConfig: ChainConfig
+  ) {
     logWithLabel({
       labelText: 'BaseFiller:fillIntent',
       level: 'info',
@@ -60,9 +86,10 @@ export class BaseFiller {
     }
   }
 
-  private async fillIntentWithIntentAggregater() {
-    const { txParams, chainConfig } = await this.signTransaction();
-
+  private async fillIntentWithIntentAggregater(
+    txParams: any,
+    chainConfig: ChainConfig
+  ) {
     const signedTx = await chainConfig.walletClient.signTransaction(txParams);
 
     logWithLabel({
@@ -91,9 +118,7 @@ export class BaseFiller {
     }
   }
 
-  private async simulateTransaction() {
-    const { txParams, chainConfig } = await this.signTransaction();
-
+  private async simulateTransaction(txParams: any, chainConfig: ChainConfig) {
     try {
       logWithLabel({
         labelText: 'BaseFiller:simulateTransaction',
@@ -101,13 +126,15 @@ export class BaseFiller {
         message: `Simulating transaction...`,
       });
 
-      await chainConfig.publicClient.estimateGas(txParams);
+      const gasUsed = await chainConfig.publicClient.estimateGas(txParams);
 
       logWithLabel({
         labelText: 'BaseFiller:simulateTransaction',
         level: 'info',
         message: `Simulation successful`,
       });
+
+      return gasUsed;
     } catch (error) {
       logWithLabel({
         labelText: 'BaseFiller:simulateTransaction',
@@ -117,11 +144,11 @@ export class BaseFiller {
     }
   }
 
-  private async signTransaction() {
-    const gasInfo = await this.calculateGasFee();
-    const fillData = await this.fetchFillData();
-    const chainConfig = getChainConfig(this.config, fillData.chainId);
-
+  protected createTransaction(
+    fillData: FillRequest,
+    gasInfo: GasInfo,
+    chainConfig: ChainConfig
+  ) {
     let txParams;
     txParams = {
       account: this.config.common.relayerAddress,
@@ -154,7 +181,7 @@ export class BaseFiller {
       };
     }
 
-    return { txParams, chainConfig };
+    return txParams;
   }
 
   private async fetchFillData() {
@@ -174,7 +201,10 @@ export class BaseFiller {
     return protocolConfig.simulate;
   }
 
-  protected async calculateGasFee() {
+  protected async calculateGasFee(
+    fillData: FillRequest,
+    chainConfig: ChainConfig
+  ): Promise<GasInfo | null> {
     return {
       gasLimit: BigInt(0),
       gasPrice: BigInt(0),

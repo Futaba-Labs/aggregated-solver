@@ -65,7 +65,7 @@ export type Token = {
   minAmount: number;
   maxAmount: number;
   relayerFeePct: {
-    [key: string]: number;
+    [key: string]: number | undefined;
   };
 };
 
@@ -223,4 +223,19 @@ export const fetchDstChainFilter = (protocol: string, chainId: CHAIN_IDs) => {
     throw new Error(`Dst chain filter not found for chainId: ${chainId}`);
   }
   return dstChainFilter;
+};
+
+export const fetchTokenConfig = (
+  protocol: string,
+  chainId: CHAIN_IDs,
+  tokenAddress: Address
+) => {
+  const dstChainFilter = fetchDstChainFilter(protocol, chainId);
+  const tokenConfig = dstChainFilter.supportTokens.find(
+    (t) => t.address === tokenAddress
+  );
+  if (!tokenConfig) {
+    throw new Error(`Token config not found for tokenAddress: ${tokenAddress}`);
+  }
+  return tokenConfig;
 };

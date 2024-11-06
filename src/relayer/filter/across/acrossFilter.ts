@@ -1,11 +1,11 @@
 import { zeroAddress } from 'viem';
 
-import { Config } from '../../config/config';
-import { AcrossMetadata, Intent } from '../../types';
-import { logWithLabel } from '../../utils';
-import { BaseFilter } from './baseFilter';
+import { Config } from '../../../config';
+import { AcrossMetadata, Intent } from '../../../types';
+import { logWithLabel } from '../../../utils';
+import { BaseFilter } from '../baseFilter';
 
-export class AcrossFilter extends BaseFilter {
+export class AcrossFilter extends BaseFilter<AcrossMetadata> {
   constructor(intent: Intent<'across', AcrossMetadata>, config: Config) {
     super(config, intent);
   }

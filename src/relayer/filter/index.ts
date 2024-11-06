@@ -1,3 +1,3 @@
 export * from './baseFilter';
-export * from './acrossFilter';
+export * from './across/acrossFilter';
 export * from './utils';

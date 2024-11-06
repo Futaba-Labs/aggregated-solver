@@ -1,10 +1,10 @@
 import { Config } from '../../config/config';
 import { Intent } from '../../types';
 
-export class BaseFilter {
+export class BaseFilter<T> {
   constructor(
     readonly config: Config,
-    readonly intent: Intent
+    readonly intent: Intent<string, T>
   ) {}
 
   async filter(): Promise<boolean> {

@@ -1,13 +1,13 @@
 import { Config } from '../../config/config';
 import { AcrossMetadata, Intent } from '../../types';
-import { AcrossFilter } from './acrossFilter';
+import { AcrossFilter } from './across';
 import { BaseFilter } from './baseFilter';
 
 export const intentFilter = async (
   intent: Intent,
   config: Config
 ): Promise<boolean> => {
-  let filter: BaseFilter;
+  let filter: BaseFilter<any>;
   if (intent.source === 'across') {
     filter = new AcrossFilter(
       intent as Intent<'across', AcrossMetadata>,

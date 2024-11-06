@@ -1,7 +1,7 @@
-import { AcrossFiller } from '.';
 import { IntentAggregaterClient } from '../../clients';
 import { Config } from '../../config';
 import { AcrossMetadata, Intent } from '../../types';
+import { AcrossFiller } from './across';
 import { BaseFiller } from './baseFiller';
 
 export const intentFiller = async (
@@ -9,7 +9,7 @@ export const intentFiller = async (
   config: Config,
   intentAggregaterClient: IntentAggregaterClient
 ) => {
-  let filler: BaseFiller;
+  let filler: BaseFiller<any>;
   if (intent.source === 'across') {
     filler = new AcrossFiller(
       intent as Intent<'across', AcrossMetadata>,
