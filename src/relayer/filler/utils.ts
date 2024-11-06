@@ -1,8 +1,9 @@
 import { IntentAggregaterClient } from '../../clients';
 import { Config } from '../../config';
-import { AcrossMetadata, Intent } from '../../types';
+import { AcrossMetadata, DeBridgeFillOrderMetadata, Intent } from '../../types';
 import { AcrossFiller } from './across';
 import { BaseFiller } from './baseFiller';
+import { DebridgeFiller } from './debridge/debridgeFiller';
 
 export const intentFiller = async (
   intent: Intent,
@@ -13,6 +14,12 @@ export const intentFiller = async (
   if (intent.source.toLowerCase() === 'across') {
     filler = new AcrossFiller(
       intent as Intent<'across', AcrossMetadata>,
+      config,
+      intentAggregaterClient
+    );
+  } else if (intent.source.toLowerCase() === 'debridge') {
+    filler = new DebridgeFiller(
+      intent as Intent<'debridge', DeBridgeFillOrderMetadata>,
       config,
       intentAggregaterClient
     );
