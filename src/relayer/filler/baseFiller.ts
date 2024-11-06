@@ -32,7 +32,11 @@ export class BaseFiller<T> {
 
     const chainConfig = getChainConfig(this.config, fillData.chainId);
 
-    const gasInfo = await this.calculateGasFee(fillData, chainConfig);
+    const gasInfo = await this.calculateGasFee(
+      fillData,
+      chainConfig,
+      BigInt(0)
+    );
 
     if (!gasInfo) {
       logWithLabel({
@@ -203,7 +207,8 @@ export class BaseFiller<T> {
 
   protected async calculateGasFee(
     fillData: FillRequest,
-    chainConfig: ChainConfig
+    chainConfig: ChainConfig,
+    defaultGasUsed: bigint
   ): Promise<GasInfo | null> {
     return {
       gasUsed: BigInt(0),
