@@ -8,7 +8,7 @@ export const intentFilter = async (
   config: Config
 ): Promise<boolean> => {
   let filter: BaseFilter<any>;
-  if (intent.source === 'across') {
+  if (intent.source.toLowerCase() === 'across') {
     filter = new AcrossFilter(
       intent as Intent<'across', AcrossMetadata>,
       config

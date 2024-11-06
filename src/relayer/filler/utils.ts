@@ -10,7 +10,7 @@ export const intentFiller = async (
   intentAggregaterClient: IntentAggregaterClient
 ) => {
   let filler: BaseFiller<any>;
-  if (intent.source === 'across') {
+  if (intent.source.toLowerCase() === 'across') {
     filler = new AcrossFiller(
       intent as Intent<'across', AcrossMetadata>,
       config,

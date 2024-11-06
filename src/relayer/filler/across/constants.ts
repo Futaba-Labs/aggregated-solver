@@ -9,3 +9,4 @@ export const ACROSS_CONFIG_STORE_ADDRESS =
 export const SPOKE_POOL_ABI = spokePoolAbi;
 export const HUB_POOL_ABI = hubPoolAbi;
 export const ACROSS_CONFIG_STORE_ABI = acrossConfigStoreAbi;
+export const DEFAULT_GAS_USED = BigInt(110000);

@@ -14,7 +14,7 @@ import { FillRequest, Intent } from '../../types';
 import { logWithLabel } from '../../utils';
 
 export interface GasInfo {
-  gasLimit: bigint;
+  gasUsed: bigint;
   gasPrice: bigint;
   maxFeePerGas: bigint;
   maxPriorityFeePerGas: bigint;
@@ -174,10 +174,10 @@ export class BaseFiller<T> {
       };
     }
 
-    if (gasInfo.gasLimit !== BigInt(0)) {
+    if (gasInfo.gasUsed !== BigInt(0)) {
       txParams = {
         ...txParams,
-        gas: gasInfo.gasLimit,
+        gas: gasInfo.gasUsed * BigInt(2),
       };
     }
 
@@ -206,7 +206,7 @@ export class BaseFiller<T> {
     chainConfig: ChainConfig
   ): Promise<GasInfo | null> {
     return {
-      gasLimit: BigInt(0),
+      gasUsed: BigInt(0),
       gasPrice: BigInt(0),
       maxFeePerGas: BigInt(0),
       maxPriorityFeePerGas: BigInt(0),

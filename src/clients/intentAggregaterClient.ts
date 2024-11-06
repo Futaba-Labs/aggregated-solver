@@ -30,7 +30,7 @@ export class IntentAggregaterClient {
     const dstFilter = [];
     for (const chain of intentFilter.dstChains) {
       for (const token of chain.supportTokens) {
-        dstFilter.push(`${chain.chainId}`);
+        dstFilter.push(`${chain.chainId}:${token.address}`);
         // dstFilter.push(`${chain.chainId}:${token.address}:${parseUnits(token.minAmount.toString(), token.decimals)}:${parseUnits(token.maxAmount.toString(), token.decimals)}`);
       }
     }

@@ -4,7 +4,12 @@ import { PublicClient, createPublicClient, http, parseUnits } from 'viem';
 import { mainnet } from 'viem/chains';
 
 import { IntentAggregaterClient } from '../../../clients';
-import { ChainConfig, Config, fetchTokenConfig } from '../../../config/config';
+import {
+  ChainConfig,
+  Config,
+  fetchDstChainFilter,
+  fetchTokenConfig,
+} from '../../../config/config';
 import env from '../../../config/env';
 import { AcrossMetadata, FillRequest, Intent } from '../../../types';
 import { logWithLabel } from '../../../utils';
@@ -12,6 +17,7 @@ import { BaseFiller } from '../baseFiller';
 import {
   ACROSS_CONFIG_STORE_ABI,
   ACROSS_CONFIG_STORE_ADDRESS,
+  DEFAULT_GAS_USED,
   HUB_POOL_ABI,
   HUB_POOL_ADDRESS,
 } from './constants';
@@ -36,7 +42,7 @@ export class AcrossFiller extends BaseFiller<AcrossMetadata> {
     chainConfig: ChainConfig
   ) {
     let gasInfo = {
-      gasLimit: BigInt(0),
+      gasUsed: BigInt(0),
       gasPrice: BigInt(0),
       maxFeePerGas: BigInt(0),
       maxPriorityFeePerGas: BigInt(0),
@@ -53,7 +59,7 @@ export class AcrossFiller extends BaseFiller<AcrossMetadata> {
 
     if (relayerFeePct === 0) {
       return {
-        gasLimit: BigInt(0),
+        gasUsed: BigInt(0),
         gasPrice: BigInt(0),
         maxFeePerGas: BigInt(0),
         maxPriorityFeePerGas: BigInt(0),
@@ -62,13 +68,38 @@ export class AcrossFiller extends BaseFiller<AcrossMetadata> {
 
     // calculate gas used
     const txParams = this.createTransaction(fillData, gasInfo, chainConfig);
-    let gasUsed = await chainConfig.publicClient.estimateGas(txParams);
-    gasUsed = BigInt(Math.ceil(Number(gasUsed) * 0.92));
+
+    let gasUsed = BigInt(0);
+    try {
+      gasUsed = await chainConfig.publicClient.estimateGas(txParams);
+      gasUsed = BigInt(Math.ceil(Number(gasUsed) * 0.92));
+    } catch (error) {
+      logWithLabel({
+        labelText: 'AcrossFiller:calculateGasFee',
+        level: 'warn',
+        message: `Error estimating gas: ${error}`,
+      });
+      gasUsed = DEFAULT_GAS_USED;
+    }
 
     // calculate gas price
     const gasPrice = BigInt(
       Math.ceil(Number((relayerFee * relayerFeePct) / Number(gasUsed)))
     );
+
+    if (!this.useEip1559()) {
+      gasInfo.gasPrice = gasPrice;
+      gasInfo.gasUsed = gasUsed;
+
+      logWithLabel({
+        labelText: 'AcrossFiller:calculateGasFee',
+        level: 'info',
+        message: `Gas info: ${JSON.stringify(gasInfo, (_, v) =>
+          typeof v === 'bigint' ? v.toString() : v
+        )}`,
+      });
+      return gasInfo;
+    }
 
     // fetch base fee
     // TODO: need to predict the base fee
@@ -80,7 +111,7 @@ export class AcrossFiller extends BaseFiller<AcrossMetadata> {
     if (!baseFee) {
       return {
         gasPrice,
-        gasLimit: gasUsed,
+        gasUsed,
         maxFeePerGas: BigInt(0),
         maxPriorityFeePerGas: BigInt(0),
       };
@@ -91,14 +122,16 @@ export class AcrossFiller extends BaseFiller<AcrossMetadata> {
     const maxFeePerGas = baseFee * BigInt(2) + maxPriorityFeePerGas;
 
     gasInfo.gasPrice = gasPrice;
-    gasInfo.gasLimit = gasUsed;
+    gasInfo.gasUsed = gasUsed;
     gasInfo.maxFeePerGas = maxFeePerGas;
     gasInfo.maxPriorityFeePerGas = maxPriorityFeePerGas;
 
     logWithLabel({
       labelText: 'AcrossFiller:calculateGasFee',
       level: 'info',
-      message: `Gas info: ${JSON.stringify(gasInfo)}`,
+      message: `Gas info: ${JSON.stringify(gasInfo, (_, v) =>
+        typeof v === 'bigint' ? v.toString() : v
+      )}`,
     });
 
     return gasInfo;
@@ -114,7 +147,7 @@ export class AcrossFiller extends BaseFiller<AcrossMetadata> {
     const [currentUt, nextUt, rawL1TokenConfig] = await this.multiCall(
       this.intent.input.amount,
       closestBlock,
-      this.intent.output.tokenAddress
+      this.intent.output.tokenAddress as `0x${string}`
     );
 
     const parsedL1TokenConfig =
@@ -134,8 +167,8 @@ export class AcrossFiller extends BaseFiller<AcrossMetadata> {
     );
 
     // 4. calculate the relayer fee
-    const inputAmout = BigNumber.from(this.intent.input.amount);
-    const outputAmount = BigNumber.from(this.intent.output.amount);
+    const inputAmout = BigNumber.from(this.intent.input.amount.toString());
+    const outputAmount = BigNumber.from(this.intent.output.amount.toString());
 
     const lpFeeTotal = inputAmout
       .mul(lpFeePct)
@@ -164,7 +197,6 @@ export class AcrossFiller extends BaseFiller<AcrossMetadata> {
     return Number(latestBlock.number) - blockNumberDiff;
   }
 
-  // TODO: convert outputToken to L1 token address
   private async multiCall(
     inputAmount: bigint,
     blockNumber: number,
@@ -207,7 +239,7 @@ export class AcrossFiller extends BaseFiller<AcrossMetadata> {
   private fetchRelayerFeePct() {
     const tokenConfig = fetchTokenConfig(
       this.intent.source.toLowerCase(),
-      this.intent.input.chainId,
+      this.intent.output.chainId,
       this.intent.output.tokenAddress as `0x${string}`
     );
 
@@ -225,8 +257,26 @@ export class AcrossFiller extends BaseFiller<AcrossMetadata> {
       return 0;
     }
 
-    return tokenConfig.relayerFeePct[
-      thresholdAmount.toString() as keyof typeof tokenConfig.relayerFeePct
-    ];
+    const relayerFeePct =
+      tokenConfig.relayerFeePct[
+        thresholdAmount.toString() as keyof typeof tokenConfig.relayerFeePct
+      ];
+
+    logWithLabel({
+      labelText: 'AcrossFiller:fetchRelayerFeePct',
+      level: 'info',
+      message: `Relayer fee pct: ${relayerFeePct}`,
+    });
+
+    return relayerFeePct;
+  }
+
+  private useEip1559() {
+    const dstChainConfig = fetchDstChainFilter(
+      this.intent.source,
+      this.intent.output.chainId
+    );
+
+    return dstChainConfig.eip1559;
   }
 }

@@ -77,9 +77,10 @@
     ],
     "dstChains": [
       {
-        "chainId": 10,
-        "fillContract": "0x6f26Bf09B1C792e3228e5467807a900A503c0281",
+        "chainId": 8453,
+        "fillContract": "0x09aea4b2242abC8bb4BB78D537A67a245A7bEC64",
         "useIntentAggregater": true,
+        "eip1559": false,
         "supportTokens": [
           {
             "address": "0x4200000000000000000000000000000000000006",
@@ -99,6 +100,7 @@
         "chainId": 1,
         "fillContract": "0x5c7BCd6E7De5423a257D81B442095A1a6ced35C5",
         "useIntentAggregater": false,
+        "eip1559": true,
         "supportTokens": [
           {
             "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",

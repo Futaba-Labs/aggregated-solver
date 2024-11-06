@@ -56,6 +56,7 @@ export interface DstChainFilter {
   supportTokens: Token[];
   fillContract: Address;
   useIntentAggregater: boolean;
+  eip1559: boolean;
 }
 
 export type Token = {
@@ -149,6 +150,7 @@ export function loadConfig(): Config {
         chainId: chain.chainId,
         fillContract: chain.fillContract as Address,
         useIntentAggregater: chain.useIntentAggregater,
+        eip1559: chain.eip1559,
         supportTokens: chain.supportTokens.map((token) => ({
           address: token.address as Address,
           symbol: token.symbol,
