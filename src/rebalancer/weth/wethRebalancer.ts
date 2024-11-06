@@ -52,10 +52,10 @@ export class WethRebalancer {
 
     // Target ratio
     const totalBalance = ethBalance + wethBalance;
-    const targetEth = (Number(totalBalance) * (1 - wrapConfig.wethPct)) / 100;
+    const targetEth = Number(totalBalance) * (1 - wrapConfig.wethPct);
 
-    const lowerBoundEth = (targetEth * (1 - wrapConfig.allowancePct)) / 100;
-    const upperBoundEth = (targetEth * (1 + wrapConfig.allowancePct)) / 100;
+    const lowerBoundEth = targetEth * (1 - wrapConfig.allowancePct);
+    const upperBoundEth = targetEth * (1 + wrapConfig.allowancePct);
 
     let req;
     if (ethBalance < lowerBoundEth) {
