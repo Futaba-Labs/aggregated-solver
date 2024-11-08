@@ -1,5 +1,6 @@
 import { IntentAggregaterClient } from '../../clients';
 import { Config } from '../../config';
+import { BaseSettler, DebridgeSettler } from '../../settler';
 import { AcrossMetadata, DeBridgeFillOrderMetadata, Intent } from '../../types';
 import { AcrossFiller } from './across';
 import { BaseFiller } from './baseFiller';
@@ -11,6 +12,7 @@ export const intentFiller = async (
   intentAggregaterClient: IntentAggregaterClient
 ) => {
   let filler: BaseFiller<any>;
+  let settler: BaseSettler<any>;
   if (intent.source.toLowerCase() === 'across') {
     filler = new AcrossFiller(
       intent as Intent<'across', AcrossMetadata>,
@@ -23,9 +25,18 @@ export const intentFiller = async (
       config,
       intentAggregaterClient
     );
+    settler = new DebridgeSettler(
+      config,
+      intent as Intent<'debridge', DeBridgeFillOrderMetadata>
+    );
   } else {
     filler = new BaseFiller(intent, config, intentAggregaterClient);
   }
 
-  return filler.fillIntent();
+  return async () => {
+    await filler.fillIntent();
+    if (settler) {
+      await settler.settleIntent();
+    }
+  };
 };

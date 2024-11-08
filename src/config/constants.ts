@@ -13,4 +13,6 @@ export enum CHAIN_IDs {
   REDSTONE = 690,
   ZORA = 7777777,
   WORLDCHAIN = 480,
+  AVALANCHE = 43114,
+  BNB = 56,
 }
