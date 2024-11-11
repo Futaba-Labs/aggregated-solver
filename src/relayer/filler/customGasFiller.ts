@@ -59,16 +59,22 @@ export abstract class CustomGasFiller<T> extends BaseFiller<T> {
       gasUsed = BigInt(Math.ceil(Number(gasUsed) * 0.92));
     } catch (error) {
       logWithLabel({
-        labelText: 'CustomGasFiller:calculateGasFee',
+        labelText: `${this.intent.source}Filler:calculateGasFee`,
         level: 'warn',
         message: `Error estimating gas: ${error}`,
       });
       gasUsed = defaultGasUsed;
     }
 
+    logWithLabel({
+      labelText: `${this.intent.source}Filler:calculateGasFee`,
+      level: 'info',
+      message: `Gas used: ${gasUsed}`,
+    });
+
     // calculate gas price
     const gasPrice = BigInt(
-      Math.ceil(Number((relayerFee * relayerFeePct) / Number(gasUsed)))
+      Math.ceil((relayerFee * relayerFeePct) / Number(gasUsed))
     );
 
     if (!this.useEip1559()) {
@@ -76,7 +82,7 @@ export abstract class CustomGasFiller<T> extends BaseFiller<T> {
       gasInfo.gasUsed = gasUsed;
 
       logWithLabel({
-        labelText: 'CustomGasFiller:calculateGasFee',
+        labelText: `${this.intent.source}Filler:calculateGasFee`,
         level: 'info',
         message: `Gas info: ${JSON.stringify(gasInfo, (_, v) =>
           typeof v === 'bigint' ? v.toString() : v
@@ -102,7 +108,10 @@ export abstract class CustomGasFiller<T> extends BaseFiller<T> {
     }
 
     // calculate max priority fee and max fee per gas
-    const maxPriorityFeePerGas = gasPrice - baseFee;
+    let maxPriorityFeePerGas = gasPrice - baseFee;
+    if (maxPriorityFeePerGas < BigInt(0)) {
+      maxPriorityFeePerGas = BigInt(0);
+    }
     const maxFeePerGas = baseFee * BigInt(2) + maxPriorityFeePerGas;
 
     gasInfo.gasPrice = gasPrice;
@@ -111,7 +120,7 @@ export abstract class CustomGasFiller<T> extends BaseFiller<T> {
     gasInfo.maxPriorityFeePerGas = maxPriorityFeePerGas;
 
     logWithLabel({
-      labelText: 'AcrossFiller:calculateGasFee',
+      labelText: `${this.intent.source}Filler:calculateGasFee`,
       level: 'info',
       message: `Gas info: ${JSON.stringify(gasInfo, (_, v) =>
         typeof v === 'bigint' ? v.toString() : v
@@ -157,7 +166,7 @@ export abstract class CustomGasFiller<T> extends BaseFiller<T> {
       ];
 
     logWithLabel({
-      labelText: 'AcrossFiller:fetchRelayerFeePct',
+      labelText: `${this.intent.source}Filler:fetchRelayerFeePct`,
       level: 'info',
       message: `Relayer fee pct: ${relayerFeePct}`,
     });

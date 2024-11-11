@@ -1,7 +1,9 @@
 import { CustomGasFiller } from '..';
 import { IntentAggregaterClient } from '../../../clients';
-import { Config } from '../../../config';
-import { DeBridgeFillOrderMetadata, Intent } from '../../../types';
+import { ChainConfig, Config } from '../../../config';
+import { DeBridgeFillOrderMetadata, FillRequest, Intent } from '../../../types';
+import { logWithLabel } from '../../../utils';
+import { DEFAULT_GAS_USED } from './constants';
 
 export class DebridgeFiller extends CustomGasFiller<DeBridgeFillOrderMetadata> {
   // 0.04% (4bps)
@@ -16,6 +18,20 @@ export class DebridgeFiller extends CustomGasFiller<DeBridgeFillOrderMetadata> {
   }
 
   protected override async calculateRelayerFee() {
-    return Number(this.intent.input.amount) * this.RELAYER_FEE_PCT;
+    const fee = Number(this.intent.input.amount) * this.RELAYER_FEE_PCT;
+    logWithLabel({
+      labelText: 'DebridgeFiller:calculateRelayerFee',
+      level: 'info',
+      message: `Relayer fee: ${fee}`,
+    });
+    return fee > 0 ? fee : 0;
+  }
+
+  protected override async calculateGasFee(
+    fillData: FillRequest,
+    chainConfig: ChainConfig,
+    defaultGasUsed: bigint
+  ) {
+    return super.calculateGasFee(fillData, chainConfig, DEFAULT_GAS_USED);
   }
 }

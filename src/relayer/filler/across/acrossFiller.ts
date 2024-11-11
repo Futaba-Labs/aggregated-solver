@@ -3,15 +3,16 @@ import { BigNumber, ethers } from 'ethers';
 import { PublicClient, createPublicClient, http } from 'viem';
 import { mainnet } from 'viem/chains';
 
-import { CustomGasFiller } from '..';
+import { CustomGasFiller, GasInfo } from '..';
 import { IntentAggregaterClient } from '../../../clients';
-import { Config, fetchTokenConfig } from '../../../config/config';
+import { ChainConfig, Config, fetchTokenConfig } from '../../../config/config';
 import env from '../../../config/env';
-import { AcrossMetadata, Intent } from '../../../types';
+import { AcrossMetadata, FillRequest, Intent } from '../../../types';
 import { logWithLabel } from '../../../utils';
 import {
   ACROSS_CONFIG_STORE_ABI,
   ACROSS_CONFIG_STORE_ADDRESS,
+  DEFAULT_GAS_USED,
   HUB_POOL_ABI,
   HUB_POOL_ADDRESS,
   L1_TOKEN_ADDRESS,
@@ -138,5 +139,13 @@ export class AcrossFiller extends CustomGasFiller<AcrossMetadata> {
     });
 
     return results;
+  }
+
+  protected override calculateGasFee(
+    fillData: FillRequest,
+    chainConfig: ChainConfig,
+    defaultGasUsed: bigint
+  ): Promise<GasInfo | null> {
+    return super.calculateGasFee(fillData, chainConfig, DEFAULT_GAS_USED);
   }
 }

@@ -6,19 +6,19 @@ import { logWithLabel } from './utils';
 const main = () => {
   const config = loadConfig();
 
-  // logWithLabel({
-  //   labelText: 'relayer',
-  //   level: 'info',
-  //   message: 'Starting relayer...',
-  // });
-  // runRelayer(config);
-
   logWithLabel({
-    labelText: 'rebalancer',
+    labelText: 'relayer',
     level: 'info',
-    message: 'Starting rebalancer...',
+    message: 'Starting relayer...',
   });
-  runRebalancer(config);
+  runRelayer(config);
+
+  // logWithLabel({
+  //   labelText: 'rebalancer',
+  //   level: 'info',
+  //   message: 'Starting rebalancer...',
+  // });
+  // runRebalancer(config);
 };
 
 main();

@@ -2,6 +2,7 @@ import { IntentAggregaterClient } from '../../clients';
 import { Config } from '../../config';
 import { BaseSettler, DebridgeSettler } from '../../settler';
 import { AcrossMetadata, DeBridgeFillOrderMetadata, Intent } from '../../types';
+import { logWithLabel } from '../../utils';
 import { AcrossFiller } from './across';
 import { BaseFiller } from './baseFiller';
 import { DebridgeFiller } from './debridge/debridgeFiller';
@@ -33,10 +34,20 @@ export const intentFiller = async (
     filler = new BaseFiller(intent, config, intentAggregaterClient);
   }
 
-  return async () => {
-    await filler.fillIntent();
-    if (settler) {
-      await settler.settleIntent();
+  const fill = async () => {
+    try {
+      await filler.fillIntent();
+      if (settler) {
+        await settler.settleIntent();
+      }
+    } catch (error) {
+      logWithLabel({
+        labelText: 'intentFiller',
+        level: 'error',
+        message: `Error filling intent: ${error}`,
+      });
     }
   };
+
+  return fill();
 };

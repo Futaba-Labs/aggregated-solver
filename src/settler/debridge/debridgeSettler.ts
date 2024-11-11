@@ -22,7 +22,7 @@ export class DebridgeSettler extends BaseSettler<DeBridgeFillOrderMetadata> {
       address: DEBRIDGE_ADDRESSES.dst,
       abi: DEBRIDGE_DST_ABI,
       functionName: 'sendEvmUnlock',
-      args: [this.intent.orderId, this.intent.metadata.unlockAuthority, 0],
+      args: [this.intent.orderId, this.config.common.relayerAddress, 0],
       value: DEBRIDGE_MESSAGING_FEE[this.chainConfig.chainId],
     });
 

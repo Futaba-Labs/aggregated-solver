@@ -78,26 +78,6 @@
       ],
       "dstChains": [
         {
-          "chainId": 8453,
-          "fillContract": "0x09aea4b2242abC8bb4BB78D537A67a245A7bEC64",
-          "useIntentAggregater": true,
-          "eip1559": false,
-          "supportTokens": [
-            {
-              "address": "0x4200000000000000000000000000000000000006",
-              "symbol": "WETH",
-              "decimals": 18,
-              "minAmount": 0.001,
-              "maxAmount": 5,
-              "relayerFeePct": {
-                "0.001": 0.5,
-                "0.1": 0.4,
-                "1": 0.3
-              }
-            }
-          ]
-        },
-        {
           "chainId": 1,
           "fillContract": "0x5c7BCd6E7De5423a257D81B442095A1a6ced35C5",
           "useIntentAggregater": false,
@@ -199,53 +179,9 @@
         {
           "chainId": 8453,
           "fillContract": "0xe7351fd770a37282b91d153ee690b63579d6dd7f",
-          "useIntentAggregater": true,
+          "useIntentAggregater": false,
           "eip1559": false,
           "supportTokens": [
-            {
-              "address": "0x4200000000000000000000000000000000000006",
-              "symbol": "WETH",
-              "decimals": 18,
-              "minAmount": 0.001,
-              "maxAmount": 5,
-              "relayerFeePct": {
-                "0.001": 0.5,
-                "0.1": 0.4,
-                "1": 0.3
-              }
-            },
-            {
-              "address": "0x0000000000000000000000000000000000000000",
-              "symbol": "ETH",
-              "decimals": 18,
-              "minAmount": 0.001,
-              "maxAmount": 5,
-              "relayerFeePct": {
-                "0.001": 0.5,
-                "0.1": 0.4,
-                "1": 0.3
-              }
-            }
-          ]
-        },
-        {
-          "chainId": 1,
-          "fillContract": "0xe7351fd770a37282b91d153ee690b63579d6dd7f",
-          "useIntentAggregater": false,
-          "eip1559": true,
-          "supportTokens": [
-            {
-              "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-              "symbol": "WETH",
-              "decimals": 18,
-              "minAmount": 0.001,
-              "maxAmount": 5,
-              "relayerFeePct": {
-                "0.05": 0.9,
-                "0.1": 0.8,
-                "1": 0.7
-              }
-            },
             {
               "address": "0x0000000000000000000000000000000000000000",
               "symbol": "ETH",

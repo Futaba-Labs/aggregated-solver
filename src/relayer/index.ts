@@ -22,6 +22,9 @@ const checkAllowance = async (config: Config, protocol: ProtocolConfig) => {
   for (const chain of protocol.intentFilter.dstChains) {
     const chainConfig = getChainConfig(config, chain.chainId);
     for (const token of chain.supportTokens) {
+      if (token.address === '0x0000000000000000000000000000000000000000') {
+        continue;
+      }
       await checkEnoughAllowance(
         token.address,
         chain.fillContract,

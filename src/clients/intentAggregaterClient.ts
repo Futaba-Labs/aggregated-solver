@@ -123,12 +123,13 @@ export class IntentAggregaterClient {
     intent: Intent,
     repaymentChain: 'source' | 'destination'
   ) {
+    const query = {
+      signer: this.config.common.relayerAddress,
+      ...(intent.source.toLowerCase() === 'across' && { repaymentChain }),
+    };
     const response = await axios.post(
       `${this.apiUrl}/api/intents/${intent.id}/request`,
-      {
-        signer: this.config.common.relayerAddress,
-        repaymentChain,
-      },
+      query,
       {
         headers: {
           'Content-Type': 'application/json',
